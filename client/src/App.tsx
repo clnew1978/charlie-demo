@@ -1,5 +1,7 @@
 import { useState, Dispatch, SetStateAction } from "react";
 import "./App.css";
+import ApolloAppProvider from './ApolloProvider';
+import Reservations from "./Reservations";
 
 interface Product { category: string; price: string; stocked: boolean; name: string; }
 
@@ -61,7 +63,6 @@ function SearchBar({ filterText, onFilterTextChange, inStockOnly, onInStockOnlyC
 }) {
   return (
     <div>
-      <p>{process.env.REACT_APP_NOT_SECRET_CODE}</p>
       <form>
         <input type="text" value={filterText} placeholder="Search..." onChange={(e) => onFilterTextChange(e.target.value)} />
       </form>
@@ -78,10 +79,15 @@ function SearchBar({ filterText, onFilterTextChange, inStockOnly, onInStockOnlyC
 function FilterableProductTable({ products }: { products: Product[] }) {
   const [filterText, setFilterText] = useState("");
   const [inStockOnly, setInStockOnly] = useState(false);
-  return (<div style={{ width: '16em' }}>
-    <SearchBar filterText={filterText} onFilterTextChange={setFilterText} inStockOnly={inStockOnly} onInStockOnlyChange={setInStockOnly} />
-    <ProductTable products={products} filterText={filterText} inStockOnly={inStockOnly} />
-  </div>);
+  return (
+    <div style={{ width: '64em' }}>
+      <ApolloAppProvider>
+        <SearchBar filterText={filterText} onFilterTextChange={setFilterText} inStockOnly={inStockOnly} onInStockOnlyChange={setInStockOnly} />
+        <ProductTable products={products} filterText={filterText} inStockOnly={inStockOnly} />
+        <Reservations />
+      </ApolloAppProvider>
+    </div>
+  );
 }
 
 const PRODUCTS = [
