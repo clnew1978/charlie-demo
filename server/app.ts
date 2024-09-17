@@ -12,9 +12,9 @@ import logger from './lib/logger';
 import { config } from './environment';
 import { getTypeDefs, getResolvers } from './lib/graphql';
 import { initDB, destroyDB } from './lib/dal';
-import { getDemoContext } from './lib/context';
 import { DemoContext } from './lib/common';
 import { GraphQLError } from 'graphql';
+import { typeDefs as authenticationTypeDefs, resolvers as authenticationResolvers, findUser } from './lib/authentication';
 
 
 async function main() {
@@ -52,15 +52,20 @@ async function main() {
       apolloServer,
       {
         context: async ({ req }) => {
-          const demoContext = await getDemoContext(req);
-          if (demoContext !== null) {
-            return demoContext;
+          const user = findUser(req.headers.authorization);
+          if (!user) {
+            throw new GraphQLError('User is not authenticated', { extensions: { code: 'UNAUTHENTICATED', http: { status: 401 } } });
           }
-          throw new GraphQLError('User is not authenticated', { extensions: { code: 'UNAUTHENTICATED', http: { status: 401 } } });
+          return { user };
         }
       }
     )
   );
+
+  const apolloMockSSOServer = new ApolloServer<any>({ typeDefs: authenticationTypeDefs, resolvers: authenticationResolvers });
+  await apolloMockSSOServer.start();
+  app.use(config.baseV0URL + '/sso/graphql', cors<cors.CorsRequest>(), express.json(), expressMiddleware(apolloMockSSOServer, {}));
+
   let staticFilesPath = path.join(__dirname, 'client');
   app.use(express.static(staticFilesPath));
   app.get('/*', (_req, res) => {

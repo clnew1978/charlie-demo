@@ -2,8 +2,6 @@
     "baseV0URL": "/api/v0",
     "serverPort": 27321,
     "serverAddress": "0.0.0.0",
-    "apiGuestAuthorization": "CC0BCEB0-A65B-4E68-B6FF-06C9EE0BF047",
-    "apiEmployeeAuthorization": "A9B563EE-2A59-47DC-8970-93E8458BCFE3",
     "couchDBAddress": "http://192.168.0.80:5984",
     "couchDBUserName": "admin",
     "couchDBPassword": "W3lcome1",

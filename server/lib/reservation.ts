@@ -10,9 +10,8 @@ const typeDefs = buildSchema(`
     scalar Date
     enum ReservationStatus {
         Created
-        Finished
+        Completed
         Canceled
-        Deleted
     }
     input ReservationCreateInput {
         guestName: String!
@@ -26,6 +25,7 @@ const typeDefs = buildSchema(`
         guestPhone: String!
         arrivalTime: Date!
         tableSize: Int!
+        status: ReservationStatus!
     }
     type Reservation {
         id: String!
@@ -56,7 +56,7 @@ const resolvers = {
             const selector: any = {};
             const user = context.user as User;
             if (user.userType === UserType.Guest) {
-                lodash.set(selector, 'guestName.$eg', user.name);
+                lodash.set(selector, 'guestName.$eq', user.name);
             }
             if (args.begin) {
                 lodash.set(selector, 'arrivalTime.$gt', (args.begin as Date).getTime());
@@ -111,7 +111,7 @@ const resolvers = {
                 );
             }
             logger.debug('updateReservation: create input(%j)', input);
-            const retval = await updateReservation(input);
+            const retval = await updateReservation(input, user.userType);
             logger.debug('updateReservation: done with result(%j)', retval);
             return retval;
         },

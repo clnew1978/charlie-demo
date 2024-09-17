@@ -8,7 +8,7 @@ import { v4 } from 'uuid';
 
 import logger from './logger';
 import { config } from '../environment';
-import { Reservation, ReservationCreateInput, ReservationStatus, ReservationUpdateInput } from './common';
+import { Reservation, ReservationCreateInput, ReservationStatus, ReservationUpdateInput, UserType } from './common';
 
 interface DemoDB {
     init(): Promise<void>;
@@ -295,6 +295,7 @@ export async function destroyDB() {
     logger.debug('destroyDB: database destroyed.');
 }
 
+// TODO add validation for creating reservatoin
 export async function addReservation(input: ReservationCreateInput): Promise<Reservation> {
     if (demoDB === null) {
         logger.error('addReservation: database was not initialized correctly.');
@@ -319,7 +320,8 @@ export async function listReservations(selector: any): Promise<Reservation[]> {
     return demoDB.listReservations(selector);
 }
 
-export async function updateReservation(input: ReservationUpdateInput): Promise<Reservation> {
+// TODO add validation for updating reservatoin
+export async function updateReservation(input: ReservationUpdateInput, userType: UserType): Promise<Reservation> {
     if (demoDB === null) {
         logger.error('updateReservation: database was not initialized correctly.');
         throw new GraphQLError(

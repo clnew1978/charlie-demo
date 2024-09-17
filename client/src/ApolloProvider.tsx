@@ -1,13 +1,27 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect, useContext } from 'react';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
+import { AuthenticationContext } from './AuthenticationContext';
 
-const client = new ApolloClient({
-  uri: process.env.REACT_APP_GRAPHQL_API_ENDPOINT,
-  cache: new InMemoryCache(),
-  headers: { Authorization: 'A9B563EE-2A59-47DC-8970-93E8458BCFE3+EBE64507-5680-46F1-A901-E6C97E634ED9' },
-});
+
+
 const ApolloAppProvider = ({ children }: { children: ReactNode }) => {
-  return (<ApolloProvider client={client}>{children}</ApolloProvider>);
+  const authenticationContext = useContext(AuthenticationContext);
+  const [client, setClient] = useState(new ApolloClient({
+    uri: process.env.REACT_APP_GRAPHQL_API_ENDPOINT,
+    cache: new InMemoryCache(),
+    headers: { Authorization: authenticationContext.token },
+  }));
+  useEffect(() => {
+    setClient(
+      new ApolloClient({
+        uri: process.env.REACT_APP_GRAPHQL_API_ENDPOINT,
+        cache: new InMemoryCache(),
+        headers: { Authorization: authenticationContext.token },
+      })
+    );
+  }, [authenticationContext]);
+  return (<div key={authenticationContext.token}><ApolloProvider client={client}>{children}</ApolloProvider></div>);
 };
+
 export default ApolloAppProvider;
