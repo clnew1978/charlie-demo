@@ -35,7 +35,7 @@ class CouchDemoDB implements DemoDB {
     }
 
     async init() {
-        this.couchServer = Nano({ url: this.address, requestDefaults: { timeout: 10000 } });
+        this.couchServer = Nano({ url: this.address, requestDefaults: { timeout: 5000 } });
         await this.couchServer.auth(this.username, this.password);
         await this.couchServer.info();
         try {
