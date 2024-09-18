@@ -2,7 +2,7 @@ import { buildSchema, GraphQLError } from 'graphql';
 import * as lodash from 'lodash';
 
 import logger from './logger';
-import { DemoContext, ReservationCreateInput, ReservationUpdateInput, User, UserType } from './common';
+import { DemoContext, ReservationCreateInput, ReservationStatus, ReservationUpdateInput, User, UserType } from './common';
 import { addReservation, listReservations, updateReservation } from './dal';
 
 
@@ -64,9 +64,10 @@ const resolvers = {
             if (args.end) {
                 lodash.set(selector, 'arrivalTime.$lt', (args.end as Date).getTime());
             }
-            logger.info('reservations: selector(%j)', selector);
+            lodash.set(selector, 'status.$in', [ReservationStatus.Created, ReservationStatus.Completed]);
+            logger.debug('reservations: selector(%j)', selector);
             const retval = await listReservations(selector);
-            logger.info('reservations: done with result(%j)', retval);
+            logger.debug('reservations: done with result(%j)', retval);
             return retval;
         },
     },

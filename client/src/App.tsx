@@ -12,19 +12,19 @@ function App() {
   const [context, setContext] = useState<AuthenticationInfo>({ token: '', name: '', userType: '' });
   return (
     <AuthenticationContext.Provider value={context}>
-      <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Charlie Demo
-            </Typography>
-            <Login setContext={setContext} />
-          </Toolbar>
-        </AppBar>
-        <ApolloAppProvider>
+      <ApolloAppProvider>
+        <Box sx={{ flexGrow: 1 }}>
+          <AppBar position="static">
+            <Toolbar>
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                Charlie Demo
+              </Typography>
+              <Login setContext={setContext} />
+            </Toolbar>
+          </AppBar>
           <Reservations />
-        </ApolloAppProvider>
-      </Box>
+        </Box>
+      </ApolloAppProvider>
     </AuthenticationContext.Provider>
   );
 }

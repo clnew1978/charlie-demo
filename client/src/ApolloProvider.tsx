@@ -4,7 +4,6 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { AuthenticationContext } from './AuthenticationContext';
 
 
-
 const ApolloAppProvider = ({ children }: { children: ReactNode }) => {
   const authenticationContext = useContext(AuthenticationContext);
   const [client, setClient] = useState(new ApolloClient({

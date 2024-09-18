@@ -2,8 +2,7 @@ import { gql, useMutation, useQuery } from '@apollo/client';
 import { Dispatch, ReactNode, SetStateAction, useContext, useState } from 'react';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { Button, TextField, CircularProgress, Autocomplete } from '@mui/material';
-import { Accordion, AccordionSummary, AccordionDetails, AccordionActions } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { DialogTitle, Dialog, DialogContent, DialogActions, DialogContentText } from '@mui/material';
 
 import { AuthenticationContext, AuthenticationInfo } from './AuthenticationContext';
 
@@ -38,10 +37,14 @@ const GET_USERS = gql`
     }
 `
 
-function LoginPage({ setContext }: { setContext: Dispatch<SetStateAction<AuthenticationInfo>> }) {
+function LoginDialog({ setContext, open, onClose }: {
+    setContext: Dispatch<SetStateAction<AuthenticationInfo>>,
+    open: boolean,
+    onClose: () => void
+}) {
     const [name, setName] = useState<string>('');
     const [password, setPassword] = useState('');
-    const [login, { loading: mLoading, error: mError, data: mData, reset: mReset }] = useMutation(LOGIN_MUTATION); // result
+    const [login, { loading: mLoading, error: mError, data: mData, reset: mReset }] = useMutation(LOGIN_MUTATION);
     const { data: qData } = useQuery(GET_USERS);
 
     if (mLoading) {
@@ -55,40 +58,62 @@ function LoginPage({ setContext }: { setContext: Dispatch<SetStateAction<Authent
     if (mData) {
         setContext(mData.login);
     }
+    const submit = async () => {
+        try {
+            await login({ variables: { name, password } });
+            onClose();
+        } catch {
+        }
+    };
     return (
-        <form
-            onSubmit={async (e) => {
-                e.preventDefault();
-                try {
-                    await login({ variables: { name, password } });
-                } catch {
-                }
-            }}
-        >
-            <Accordion sx={{ width: '16em' }}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    Please Login
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Autocomplete
-                        noOptionsText={false}
-                        onChange={(_event, newValue, reason) => {
-                            if (reason === 'selectOption') {
-                                setName(newValue.name);
-                                setPassword(newValue.password);
-                            }
-                        }}
-                        getOptionLabel={(option: any) => option.name}
-                        options={qData ? qData.users : []}
-                        renderInput={(params) => <TextField sx={{ px: 1, py: 1 }} required {...params} label="Username" />}
-                    />
-                    <TextField label="Password" sx={{ px: 1, py: 1 }} type="password" variant='outlined' value={password} onChange={e => setPassword(e.target.value)} />
-                </AccordionDetails>
-                <AccordionActions>
-                    <Button color="inherit" type="submit">Login</Button>
-                </AccordionActions>
-            </Accordion>
-        </form>
+        <Dialog open={open} onClose={onClose} >
+            <DialogTitle>Login</DialogTitle>
+            <DialogContent>
+                <DialogContentText sx={{ fontSize: 12 }}>
+                    Five inbuilt users<br></br>
+                    Same password(12345)<br></br>
+                    Just Select one
+                </DialogContentText>
+                <Autocomplete
+                    freeSolo
+                    onChange={(_event, newValue, reason) => {
+                        if (reason === 'selectOption') {
+                            setName(newValue.name);
+                            setPassword(newValue.password);
+                        }
+                    }}
+                    onInputChange={(_event, newValue) => {
+                        setName(newValue);
+                    }}
+                    getOptionLabel={(option: any) => option.name}
+                    options={qData ? qData.users : []}
+                    renderInput={(params) => (<TextField label="Username" sx={{ px: 1, py: 1, width: '16em' }} required {...params} />)}
+                />
+                <TextField label="Password" sx={{ px: 1, py: 1, width: '16em' }} type="password" variant='outlined' value={password} onChange={e => setPassword(e.target.value)} />
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={submit}>Ok</Button>
+                <Button onClick={onClose} autoFocus>Cancel</Button>
+            </DialogActions>
+        </Dialog>
+    );
+
+}
+
+function LoginPage({ setContext }: { setContext: Dispatch<SetStateAction<AuthenticationInfo>> }) {
+    const [open, setOpen] = useState(false);
+
+    const handleClick = async () => {
+        setOpen(true);
+    };
+    const onClose = () => {
+        setOpen(false);
+    }
+    return (
+        <div>
+            <Button color="inherit" onClick={handleClick}>Login</Button>
+            <LoginDialog setContext={setContext} open={open} onClose={onClose} />
+        </div>
     );
 }
 
@@ -97,7 +122,6 @@ function LogoutPage({ setContext }: { setContext: Dispatch<SetStateAction<Authen
         setContext({ token: '', name: '', userType: '' });
     };
     return (<Button color="inherit" onClick={handleClick}>Logout</Button>)
-
 }
 
 function Login({ setContext }: { setContext: Dispatch<SetStateAction<AuthenticationInfo>> }) {
