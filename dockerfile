@@ -1,10 +1,12 @@
 FROM node:18.20.4-alpine3.20
 
+RUN env
+
 RUN mkdir -p /opt/charlie-demo/
 
-COPY ../ /opt/charlie-demo/
+COPY / /opt/charlie-demo/
 
-RUN 'cd /opt/charlie-demo/server; npm run build-prod'
+RUN cd /opt/charlie-demo/server && npm run build-prod
 
 EXPOSE 27321
 

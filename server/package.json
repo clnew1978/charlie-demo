@@ -8,7 +8,7 @@
     "copy-files": "copyfiles --flat config.json dist",
     "build": "npm run clean && npm run tsc && npm run copy-files",
     "build-server": "npm install && npm run build",
-    "build-client": "cd .. && npm install && npm run build",
+    "build-client": "cd ../client && npm install && npm run build",
     "copy-client": "cd .. && copyfiles -u 2 client/build/**/* server/dist/client/",
     "build-prod": "npm run build-server && npm run build-client && npm run copy-client",
     "start": "node ./dist/app.js"
