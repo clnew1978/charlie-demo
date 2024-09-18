@@ -130,6 +130,7 @@ function EditingReservationRow({ reservation, setIsEditing, dispatch }: { reserv
                         }}
                     >
                         <Button sx={{ m: 2 }} variant='contained' type="submit">Ok</Button>
+                        <Button sx={{ m: 2 }} variant='contained' onClick={() => { setIsEditing(false) }}>Cancel</Button>
                     </form>
                 </TableCell>
                 <TableCell align="right">
@@ -188,6 +189,7 @@ function EditingReservationRow({ reservation, setIsEditing, dispatch }: { reserv
                     }}
                 >
                     <Button sx={{ m: 2 }} variant='contained' type="submit">Ok</Button>
+                    <Button sx={{ m: 2 }} variant='contained' onClick={() => { setIsEditing(false) }}>Cancel</Button>
                 </form>
             </TableCell>
             <TableCell align="right">
@@ -225,7 +227,7 @@ function ReservationRow({ reservation, dispatch }: { reservation: Reservation, d
 function AddingReservationRow({ dispatch, setIsAdding }: { dispatch: any, setIsAdding: any }) {
     const [addReservation, { loading, error, data, reset }] = useMutation(ADD_RESERVATIONS);
     const context = useContext(AuthenticationContext);
-    const [guestName, setGuestName] = useState(context.name);
+    const [guestName, setGuestName] = useState((context.userType === 'Guest') ? context.name : '');
     const [guestPhone, setGuestPhone] = useState('');
     const [tableSize, setTableSize] = useState(1);
     const [arrivalTime, setArrivalTime] = useState(new Date());
@@ -275,6 +277,7 @@ function AddingReservationRow({ dispatch, setIsAdding }: { dispatch: any, setIsA
                         }}
                     >
                         <Button sx={{ m: 2 }} variant='contained' type="submit">Ok</Button>
+                        <Button sx={{ m: 2 }} variant='contained' onClick={() => { setIsAdding(false) }}>Cancel</Button>
                     </form>
                 </TableCell>
                 <TableCell align="right"></TableCell>
@@ -316,6 +319,7 @@ function AddingReservationRow({ dispatch, setIsAdding }: { dispatch: any, setIsA
                     }}
                 >
                     <Button sx={{ m: 2 }} variant='contained' type="submit">Ok</Button>
+                    <Button sx={{ m: 2 }} variant='contained' onClick={() => { setIsAdding(false) }}>Cancel</Button>
                 </form>
             </TableCell>
             <TableCell align="right"></TableCell>
