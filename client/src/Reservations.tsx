@@ -1,8 +1,10 @@
 import { useContext, useState, useReducer } from 'react';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import { CircularProgress, Alert, Stack, Button, TextField } from '@mui/material';
-import { TableCell, Table, TableBody, TableContainer, TableHead, TableRow, Paper, Select, MenuItem } from '@mui/material';
-import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import {
+    TableCell, Table, TableBody, TableContainer, TableHead, TableRow, Paper, Select, MenuItem, Switch, FormGroup, FormControlLabel
+} from '@mui/material';
+import { DateTimePicker, LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 
@@ -92,58 +94,15 @@ function EditingReservationRow({ reservation, setIsEditing, dispatch }: { reserv
             setIsEditing(false);
         }
     };
-    if (context.userType === 'Guest') {
-        return (
-            <TableRow key={reservation.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell component="th" scope="row">{reservation.guestName}</TableCell>
-                <TableCell align="right">
-                    <TextField value={guestPhone} onChange={e => setGuestPhone(e.target.value)}></TextField>
-                </TableCell>
-                <TableCell align="right">
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DateTimePicker value={dayjs(arrivalTime)} onChange={e => { if (e) setArrivalTime(e.toDate()); }} />
-                    </LocalizationProvider>
-                </TableCell>
-                <TableCell align="right">
-                    <input type='number' max={20} min={1} value={tableSize} onChange={e => setTableSize(parseInt(e.target.value, 10))}></input>
-                </TableCell>
-                <TableCell align="right">
-                    {reservation.status}
-                </TableCell>
-                <TableCell align="right">
-                    <form
-                        onSubmit={async (e) => {
-                            e.preventDefault();
-                            try {
-                                const newReservation = {
-                                    ...reservation,
-                                    guestPhone,
-                                    arrivalTime: (new Date(arrivalTime)).getTime(),
-                                    tableSize,
-                                };
-                                await updateReservation({ variables: newReservation });
-                                dispatch({ type: 'update', reservation: newReservation });
-                                setIsEditing(false);
-                            } catch (err) {
-                                console.log(err);
-                            }
-                        }}
-                    >
-                        <Button sx={{ m: 2 }} variant='contained' type="submit">Ok</Button>
-                        <Button sx={{ m: 2 }} variant='contained' onClick={() => { setIsEditing(false) }}>Cancel</Button>
-                    </form>
-                </TableCell>
-                <TableCell align="right">
-                    <Button variant='contained' onClick={onDelete}>Delete</Button>
-                </TableCell>
-            </TableRow >
-        );
-    }
     return (
         <TableRow key={reservation.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-            <TableCell component="th" scope="row">
-                <TextField value={guestName} onChange={e => setGuestName(e.target.value)}></TextField>
-            </TableCell>
+            {
+                (context.userType === 'Guest') ?
+                    (<TableCell component="th" scope="row">{reservation.guestName}</TableCell>) :
+                    (<TableCell component="th" scope="row">
+                        <TextField value={guestName} onChange={e => setGuestName(e.target.value)}></TextField>
+                    </TableCell>)
+            }
             <TableCell align="right">
                 <TextField value={guestPhone} onChange={e => setGuestPhone(e.target.value)}></TextField>
             </TableCell>
@@ -153,33 +112,44 @@ function EditingReservationRow({ reservation, setIsEditing, dispatch }: { reserv
                 </LocalizationProvider>
             </TableCell>
             <TableCell align="right">
-                <input type='number' max={100} min={1} value={tableSize} onChange={e => setTableSize(parseInt(e.target.value, 10))}></input>
+                <input type='number' max={20} min={1} value={tableSize} onChange={e => setTableSize(parseInt(e.target.value, 10))}></input>
             </TableCell>
-            <TableCell align="right">
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={status}
-                    label="Status"
-                    onChange={e => setStatus(e.target.value)}
-                >
-                    <MenuItem value={'Created'}>Created</MenuItem>
-                    <MenuItem value={'Completed'}>Completed</MenuItem>
-                </Select>
-            </TableCell>
+            {
+                (context.userType === 'Guest') ?
+                    (<TableCell align="right">{reservation.status}</TableCell>) :
+                    (<TableCell align="right">
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={status}
+                            label="Status"
+                            onChange={e => setStatus(e.target.value)}
+                        >
+                            <MenuItem value={'Created'}>Created</MenuItem>
+                            <MenuItem value={'Completed'}>Completed</MenuItem>
+                        </Select>
+                    </TableCell>)
+            }
             <TableCell align="right">
                 <form
                     onSubmit={async (e) => {
                         e.preventDefault();
                         try {
-                            const newReservation = {
-                                ...reservation,
-                                guestName,
-                                guestPhone,
-                                arrivalTime: (new Date(arrivalTime)).getTime(),
-                                tableSize,
-                                status,
-                            };
+                            const newReservation = (context.userType === 'Guest') ?
+                                {
+                                    ...reservation,
+                                    guestPhone,
+                                    arrivalTime: (new Date(arrivalTime)).getTime(),
+                                    tableSize,
+                                } :
+                                {
+                                    ...reservation,
+                                    guestName,
+                                    guestPhone,
+                                    arrivalTime: (new Date(arrivalTime)).getTime(),
+                                    tableSize,
+                                    status,
+                                };
                             await updateReservation({ variables: newReservation });
                             dispatch({ type: 'update', reservation: newReservation });
                             setIsEditing(false);
@@ -243,52 +213,15 @@ function AddingReservationRow({ dispatch, setIsAdding }: { dispatch: any, setIsA
         dispatch({ type: 'add', reservation: data.addReservation });
         setIsAdding(false);
     }
-    if (context.userType === 'Guest') {
-        return (
-            <TableRow key="add-guest" sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell component="th" scope="row">{guestName}</TableCell>
-                <TableCell align="right">
-                    <TextField value={guestPhone} onChange={e => setGuestPhone(e.target.value)}></TextField>
-                </TableCell>
-                <TableCell align="right">
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DateTimePicker value={dayjs(arrivalTime)} onChange={e => { if (e) setArrivalTime(e.toDate()); }} />
-                    </LocalizationProvider>
-                </TableCell>
-                <TableCell align="right">
-                    <input type='number' max={20} min={1} value={tableSize} onChange={e => setTableSize(parseInt(e.target.value, 10))}></input>
-                </TableCell>
-                <TableCell align="right"></TableCell>
-                <TableCell align="right">
-                    <form
-                        onSubmit={async (e) => {
-                            e.preventDefault();
-                            try {
-                                const newReservation = {
-                                    guestName,
-                                    guestPhone,
-                                    arrivalTime: (new Date(arrivalTime)).getTime(),
-                                    tableSize,
-                                };
-                                await addReservation({ variables: newReservation });
-                            } catch (err) {
-                                console.log(err);
-                            }
-                        }}
-                    >
-                        <Button sx={{ m: 2 }} variant='contained' type="submit">Ok</Button>
-                        <Button sx={{ m: 2 }} variant='contained' onClick={() => { setIsAdding(false) }}>Cancel</Button>
-                    </form>
-                </TableCell>
-                <TableCell align="right"></TableCell>
-            </TableRow >
-        )
-    }
     return (
         <TableRow key="add-guest" sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-            <TableCell component="th" scope="row">
-                <TextField value={guestName} onChange={e => setGuestName(e.target.value)}></TextField>
-            </TableCell>
+            {
+                (context.userType === 'Guest') ?
+                    (<TableCell component="th" scope="row">{guestName}</TableCell>) :
+                    (<TableCell component="th" scope="row">
+                        <TextField value={guestName} onChange={e => setGuestName(e.target.value)}></TextField>
+                    </TableCell>)
+            }
             <TableCell align="right">
                 <TextField value={guestPhone} onChange={e => setGuestPhone(e.target.value)}></TextField>
             </TableCell>
@@ -298,7 +231,7 @@ function AddingReservationRow({ dispatch, setIsAdding }: { dispatch: any, setIsA
                 </LocalizationProvider>
             </TableCell>
             <TableCell align="right">
-                <input type='number' max={100} min={1} value={tableSize} onChange={e => setTableSize(parseInt(e.target.value, 10))}></input>
+                <input type='number' max={20} min={1} value={tableSize} onChange={e => setTableSize(parseInt(e.target.value, 10))}></input>
             </TableCell>
             <TableCell align="right"></TableCell>
             <TableCell align="right">
@@ -349,7 +282,17 @@ function AddReservationRow({ dispatch }: { dispatch: any }) {
 }
 
 function ReservationsTable({ reservationList }: { reservationList: Reservation[] }) {
+    const context = useContext(AuthenticationContext);
     const [reservations, dispatch] = useReducer(ReservationsReducer, reservationList);
+    const t1 = new Date();
+    t1.setHours(0, 0, 0, 0);
+    const [beginDate, setBeginDate] = useState(t1);
+    const t2 = new Date(t1.setDate(t1.getDate() + 7));
+    const [endDate, setEndDate] = useState(t2);
+    const [status, setStatus] = useState('All');
+    const [enableBeginDate, setEnableBeginDate] = useState(false);
+    const [enableEndDate, setEnableEndDate] = useState(false);
+
     return (
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: '64em' }} >
@@ -366,11 +309,74 @@ function ReservationsTable({ reservationList }: { reservationList: Reservation[]
                 </TableHead>
                 <TableBody key="tBody">
                     {
-                        reservations.map(
+                        reservations.filter((r: Reservation) => {
+                            if (status !== 'All') {
+                                if (r.status !== status) {
+                                    return false;
+                                }
+                            }
+                            if (enableBeginDate && (r.arrivalTime < beginDate)) {
+                                return false;
+                            }
+                            if (enableEndDate && (r.arrivalTime > endDate)) {
+                                return false;
+                            }
+                            return true;
+                        }).map(
                             (r: Reservation) => (<ReservationRow reservation={r} dispatch={dispatch} />)
                         )
                     }
                     <AddReservationRow dispatch={dispatch}></AddReservationRow>
+                    {
+                        (context.userType === 'Guest') ?
+                            (<TableRow></TableRow>) :
+                            (
+                                <TableRow key="Add-Row" sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                    <TableCell component="th" scope="row"></TableCell>
+                                    <TableCell align="right"></TableCell>
+                                    <TableCell align="right"></TableCell>
+                                    <TableCell align="right"></TableCell>
+                                    <TableCell align="right">
+                                        <Select
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            value={status}
+                                            label="Status"
+                                            onChange={e => setStatus(e.target.value)}
+                                        >
+                                            <MenuItem value={'All'}>All</MenuItem>
+                                            <MenuItem value={'Created'}>Created</MenuItem>
+                                            <MenuItem value={'Completed'}>Completed</MenuItem>
+                                        </Select>
+
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <FormControlLabel control={
+                                            <Switch checked={enableBeginDate} onChange={e => setEnableBeginDate(e.target.checked)} />
+                                        } label="Begin" />
+                                        {
+                                            (enableBeginDate) ?
+                                                (<LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                    <DatePicker value={dayjs(beginDate)} onChange={e => { if (e) setBeginDate(e.toDate()); }} />
+                                                </LocalizationProvider>) :
+                                                (<div></div>)
+                                        }
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <FormControlLabel control={
+                                            <Switch checked={enableEndDate} onChange={e => setEnableEndDate(e.target.checked)} />
+                                        } label="End" />
+                                        {
+                                            (enableEndDate) ?
+                                                (<LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                    <DatePicker value={dayjs(endDate)} onChange={e => { if (e) setEndDate(e.toDate()); }} />
+                                                </LocalizationProvider>) :
+                                                (<div></div>)
+                                        }
+                                    </TableCell>
+                                </TableRow>
+                            )
+                    }
                 </TableBody>
             </Table>
         </TableContainer>
