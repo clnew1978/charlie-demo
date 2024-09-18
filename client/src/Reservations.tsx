@@ -105,7 +105,7 @@ function EditingReservationRow({ reservation, setIsEditing, dispatch }: { reserv
                     </LocalizationProvider>
                 </TableCell>
                 <TableCell align="right">
-                    <input type='number' value={tableSize} onChange={e => setTableSize(parseInt(e.target.value, 10))}></input>
+                    <input type='number' max={20} min={1} value={tableSize} onChange={e => setTableSize(parseInt(e.target.value, 10))}></input>
                 </TableCell>
                 <TableCell align="right">
                     {reservation.status}
@@ -153,7 +153,7 @@ function EditingReservationRow({ reservation, setIsEditing, dispatch }: { reserv
                 </LocalizationProvider>
             </TableCell>
             <TableCell align="right">
-                <input type='number' value={tableSize} onChange={e => setTableSize(parseInt(e.target.value, 10))}></input>
+                <input type='number' max={100} min={1} value={tableSize} onChange={e => setTableSize(parseInt(e.target.value, 10))}></input>
             </TableCell>
             <TableCell align="right">
                 <Select
@@ -256,7 +256,7 @@ function AddingReservationRow({ dispatch, setIsAdding }: { dispatch: any, setIsA
                     </LocalizationProvider>
                 </TableCell>
                 <TableCell align="right">
-                    <input type='number' value={tableSize} onChange={e => setTableSize(parseInt(e.target.value, 10))}></input>
+                    <input type='number' max={20} min={1} value={tableSize} onChange={e => setTableSize(parseInt(e.target.value, 10))}></input>
                 </TableCell>
                 <TableCell align="right"></TableCell>
                 <TableCell align="right">
@@ -298,7 +298,7 @@ function AddingReservationRow({ dispatch, setIsAdding }: { dispatch: any, setIsA
                 </LocalizationProvider>
             </TableCell>
             <TableCell align="right">
-                <input type='number' value={tableSize} onChange={e => setTableSize(parseInt(e.target.value, 10))}></input>
+                <input type='number' max={100} min={1} value={tableSize} onChange={e => setTableSize(parseInt(e.target.value, 10))}></input>
             </TableCell>
             <TableCell align="right"></TableCell>
             <TableCell align="right">
