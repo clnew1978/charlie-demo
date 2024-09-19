@@ -9,6 +9,7 @@ import { addReservation, listReservations, updateReservation } from './dal';
 const typeDefs = buildSchema(`
     scalar Date
     enum ReservationStatus {
+        All
         Created
         Completed
         Canceled
@@ -36,7 +37,7 @@ const typeDefs = buildSchema(`
         status: ReservationStatus!
     }
     type Query {
-        reservations(begin: Date, end: Date): [Reservation]!
+        reservations(begin: Date, end: Date, status: ReservationStatus): [Reservation]!
     }
     type Mutation {
         addReservation(input: ReservationCreateInput!): Reservation
@@ -64,7 +65,11 @@ const resolvers = {
             if (args.end) {
                 lodash.set(selector, 'arrivalTime.$lt', (args.end as Date).getTime());
             }
-            lodash.set(selector, 'status.$in', [ReservationStatus.Created, ReservationStatus.Completed]);
+            if (args.status) {
+                lodash.set(selector, 'status.$eq', args.status as string);
+            } else {
+                lodash.set(selector, 'status.$in', [ReservationStatus.Created, ReservationStatus.Completed]);
+            }
             logger.debug('reservations: selector(%j)', selector);
             const retval = await listReservations(selector);
             logger.debug('reservations: done with result(%j)', retval);

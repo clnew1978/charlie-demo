@@ -1,9 +1,10 @@
-import { useContext, useState, useReducer } from 'react';
+import { useContext, useState, useReducer, useEffect } from 'react';
 import { gql, useQuery, useMutation } from '@apollo/client';
-import { CircularProgress, Alert, Stack, Button, TextField } from '@mui/material';
+import { CircularProgress, Alert, Stack, Button, TextField, Box } from '@mui/material';
 import {
     TableCell, Table, TableBody, TableContainer, TableHead, TableRow, Paper, Select, MenuItem, Switch, FormControlLabel
 } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 import { DateTimePicker, LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
@@ -13,8 +14,8 @@ import ReservationsReducer from './ReservationsReducer';
 
 
 const GET_RESERVATIONS = gql`
-    query {
-        reservations{
+    query reservations($begin: Date, $end: Date, $status: ReservationStatus) {
+        reservations(begin: $begin, end: $end, status: $status){
             id
             guestName
             guestPhone
@@ -282,16 +283,7 @@ function AddReservationRow({ dispatch }: { dispatch: any }) {
 }
 
 function ReservationsTable({ reservationList }: { reservationList: Reservation[] }) {
-    const context = useContext(AuthenticationContext);
     const [reservations, dispatch] = useReducer(ReservationsReducer, reservationList);
-    const t1 = new Date();
-    t1.setHours(0, 0, 0, 0);
-    const [beginDate, setBeginDate] = useState(t1);
-    const t2 = new Date(t1.setDate(t1.getDate() + 7));
-    const [endDate, setEndDate] = useState(t2);
-    const [status, setStatus] = useState('All');
-    const [enableBeginDate, setEnableBeginDate] = useState(false);
-    const [enableEndDate, setEnableEndDate] = useState(false);
 
     return (
         <TableContainer component={Paper}>
@@ -309,74 +301,11 @@ function ReservationsTable({ reservationList }: { reservationList: Reservation[]
                 </TableHead>
                 <TableBody key="tBody">
                     {
-                        reservations.filter((r: Reservation) => {
-                            if (status !== 'All') {
-                                if (r.status !== status) {
-                                    return false;
-                                }
-                            }
-                            if (enableBeginDate && (r.arrivalTime < beginDate)) {
-                                return false;
-                            }
-                            if (enableEndDate && (r.arrivalTime > endDate)) {
-                                return false;
-                            }
-                            return true;
-                        }).map(
+                        reservations.map(
                             (r: Reservation) => (<ReservationRow reservation={r} dispatch={dispatch} />)
                         )
                     }
                     <AddReservationRow dispatch={dispatch}></AddReservationRow>
-                    {
-                        (context.userType === 'Guest') ?
-                            (<TableRow></TableRow>) :
-                            (
-                                <TableRow key="Add-Row" sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row"></TableCell>
-                                    <TableCell align="right"></TableCell>
-                                    <TableCell align="right"></TableCell>
-                                    <TableCell align="right"></TableCell>
-                                    <TableCell align="right">
-                                        <Select
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
-                                            value={status}
-                                            label="Status"
-                                            onChange={e => setStatus(e.target.value)}
-                                        >
-                                            <MenuItem value={'All'}>All</MenuItem>
-                                            <MenuItem value={'Created'}>Created</MenuItem>
-                                            <MenuItem value={'Completed'}>Completed</MenuItem>
-                                        </Select>
-
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        <FormControlLabel control={
-                                            <Switch checked={enableBeginDate} onChange={e => setEnableBeginDate(e.target.checked)} />
-                                        } label="Begin" />
-                                        {
-                                            (enableBeginDate) ?
-                                                (<LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                    <DatePicker value={dayjs(beginDate)} onChange={e => { if (e) setBeginDate(e.toDate()); }} />
-                                                </LocalizationProvider>) :
-                                                (<div></div>)
-                                        }
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        <FormControlLabel control={
-                                            <Switch checked={enableEndDate} onChange={e => setEnableEndDate(e.target.checked)} />
-                                        } label="End" />
-                                        {
-                                            (enableEndDate) ?
-                                                (<LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                    <DatePicker value={dayjs(endDate)} onChange={e => { if (e) setEndDate(e.toDate()); }} />
-                                                </LocalizationProvider>) :
-                                                (<div></div>)
-                                        }
-                                    </TableCell>
-                                </TableRow>
-                            )
-                    }
                 </TableBody>
             </Table>
         </TableContainer>
@@ -384,8 +313,9 @@ function ReservationsTable({ reservationList }: { reservationList: Reservation[]
 
 }
 
-function ReservationsList() {
-    const { loading, error, data, refetch } = useQuery(GET_RESERVATIONS);
+function ReservationsList({ variables }: { variables: any }) {
+    const { loading, error, data, refetch } = useQuery(GET_RESERVATIONS, { variables, fetchPolicy: 'no-cache' });
+    console.log(variables);
 
     const handleClick = async () => {
         refetch();
@@ -401,10 +331,101 @@ function ReservationsList() {
             </Stack>
         )
     }
-    return (<ReservationsTable reservationList={data.reservations}></ReservationsTable>)
+    return (
+        <Box>
+            <ReservationsTable reservationList={data.reservations} />
+        </Box>
+    );
 }
 
-const Reservations = () => {
+function ReservationQuery() {
+    const context = useContext(AuthenticationContext);
+    const t1 = new Date();
+    t1.setHours(0, 0, 0, 0);
+    const [beginDate, setBeginDate] = useState(t1);
+    const t2 = new Date(t1.setDate(t1.getDate() + 7));
+    const [endDate, setEndDate] = useState(t2);
+    const [status, setStatus] = useState('All');
+    const [enableBeginDate, setEnableBeginDate] = useState(false);
+    const [enableEndDate, setEnableEndDate] = useState(false);
+    const variables: any = {};
+
+    if (status !== 'All') {
+        variables['status'] = status;
+    }
+    if (enableBeginDate) {
+        variables['begin'] = beginDate.getTime();
+    }
+    if (enableEndDate) {
+        variables['end'] = endDate.getTime();
+    }
+
+    return (
+        <Box>
+            <ReservationsList variables={variables} />
+            <Grid container spacing={3}>
+                {
+                    (context.userType === 'Guest') ?
+                        (<Grid size={4}></Grid>) :
+                        (
+                            <Grid size={4}>
+                                <Select sx={{ width: '12em' }}
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={status}
+                                    label="Status"
+                                    onChange={e => setStatus(e.target.value)}
+                                >
+                                    <MenuItem value={'All'}>All</MenuItem>
+                                    <MenuItem value={'Created'}>Created</MenuItem>
+                                    <MenuItem value={'Completed'}>Completed</MenuItem>
+                                </Select>
+                            </Grid>
+                        )
+                }
+                {
+                    (context.userType === 'Guest') ?
+                        (<Grid size={4}></Grid>) :
+                        (
+                            <Grid size={4}>
+                                <FormControlLabel control={
+                                    <Switch checked={enableBeginDate} onChange={e => setEnableBeginDate(e.target.checked)} />
+                                } label="Begin" />
+                                {
+                                    (enableBeginDate) ?
+                                        (<LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            <DatePicker value={dayjs(beginDate)} onChange={e => { if (e) setBeginDate(e.toDate()); }} />
+                                        </LocalizationProvider>) :
+                                        (<div></div>)
+                                }
+                            </Grid>
+                        )
+                }
+                {
+                    (context.userType === 'Guest') ?
+                        (<Grid size={4}></Grid>) :
+                        (
+                            <Grid size={4}>
+                                <FormControlLabel control={
+                                    <Switch checked={enableEndDate} onChange={e => setEnableEndDate(e.target.checked)} />
+                                } label="End" />
+                                {
+                                    (enableEndDate) ?
+                                        (<LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            <DatePicker value={dayjs(endDate)} onChange={e => { if (e) setEndDate(e.toDate()); }} />
+                                        </LocalizationProvider>) :
+                                        (<div></div>)
+                                }
+                            </Grid>
+                        )
+                }
+            </Grid>
+        </Box>
+    )
+}
+
+
+function Reservations() {
     const context = useContext(AuthenticationContext);
     if (context.token === '') {
         return (
@@ -425,7 +446,7 @@ const Reservations = () => {
             </TableContainer>
         );
     }
-    return (<ReservationsList></ReservationsList>)
+    return (<ReservationQuery />);
 }
 
 export default Reservations;
