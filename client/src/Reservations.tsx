@@ -343,7 +343,8 @@ function ReservationQuery() {
     const t1 = new Date();
     t1.setHours(0, 0, 0, 0);
     const [beginDate, setBeginDate] = useState(t1);
-    const t2 = new Date(t1.setDate(t1.getDate() + 7));
+    const t2 = new Date(t1);
+    t2.setDate(t2.getDate() + 7);
     const [endDate, setEndDate] = useState(t2);
     const [status, setStatus] = useState('All');
     const [enableBeginDate, setEnableBeginDate] = useState(false);
