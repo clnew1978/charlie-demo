@@ -1,0 +1,8 @@
+{
+    "name": "charlie-demo",
+    "version": "0.1.0",
+    "description": "Charlie Demo",
+    "scripts": {
+        "start": "node server.bundle.js"
+    }
+}

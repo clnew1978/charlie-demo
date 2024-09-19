@@ -1,0 +1,20 @@
+{
+  "name": "build",
+  "version": "0.1.0",
+  "description": "Build for Charlie Demo",
+  "scripts": {
+    "clean": "rimraf dist/",
+    "build-server": "cd ../server && npm run build && cd ../build && webpack --mode none",
+    "build-client": "cd ../client && npm run build",
+    "copy-server": "cd ..  && copyfiles -u 3 server/node_modules/leveldown/prebuilds/**/* build/dist/ && copyfiles --flat server/config.json build/dist",
+    "copy-client": "cd .. && copyfiles -u 2 client/build/**/* build/dist/client/",
+    "copy-package": "copyfiles -u 1 src/package.json dist/",
+    "build": "npm run clean && npm run build-client && npm run build-server && npm run copy-client && npm run copy-server && npm run copy-package"
+  },
+  "devDependencies": {
+    "copyfiles": "^2.4.1",
+    "rimraf": "^5.0.10",
+    "webpack": "^5.94.0",
+    "webpack-cli": "^5.1.4"
+  }
+}
