@@ -4,7 +4,7 @@
   "description": "Build for Charlie Demo",
   "scripts": {
     "clean": "rimraf dist/",
-    "build-server": "cd ../server && npm run build && cd ../build && webpack --mode none",
+    "build-server": "cd ../server && npm run build && cd ../build && webpack",
     "build-client": "cd ../client && npm run build",
     "copy-server": "cd ..  && copyfiles -u 3 server/node_modules/leveldown/prebuilds/**/* build/dist/ && copyfiles --flat server/config.json build/dist",
     "copy-client": "cd .. && copyfiles -u 2 client/build/**/* build/dist/client/",

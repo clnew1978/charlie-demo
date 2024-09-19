@@ -3,7 +3,7 @@ const path = require('path');
 
 module.exports = {
   entry: '../server/dist/app.js',
-  mode: 'production',
+  mode: 'none',
   target: 'node',
   output: {
     path: path.resolve(__dirname, 'dist'),
