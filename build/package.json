@@ -4,12 +4,12 @@
   "description": "Build for Charlie Demo",
   "scripts": {
     "clean": "rimraf dist/",
-    "build-server": "cd ../server && npm run build && cd ../build && webpack",
-    "build-client": "cd ../client && npm run build",
-    "copy-server": "cd ..  && copyfiles -u 3 server/node_modules/leveldown/prebuilds/**/* build/dist/ && copyfiles --flat server/config.json build/dist",
-    "copy-client": "cd .. && copyfiles -u 2 client/build/**/* build/dist/client/",
+    "build-nodejs-server": "cd ../nodejs-server && npm run build && cd ../build && webpack",
+    "build-react-client": "cd ../react-client && npm run build",
+    "copy-nodejs-server": "cd ..  && copyfiles -u 3 nodejs-server/node_modules/leveldown/prebuilds/**/* build/dist/ && copyfiles --flat nodejs-server/config.json build/dist",
+    "copy-react-client": "cd .. && copyfiles -u 2 react-client/build/**/* build/dist/client/",
     "copy-package": "copyfiles -u 1 src/package.json dist/",
-    "build": "npm run clean && npm run build-client && npm run build-server && npm run copy-client && npm run copy-server && npm run copy-package"
+    "build-react-nodejs": "npm run clean && npm run build-react-client && npm run build-nodejs-server && npm run copy-react-client && npm run copy-nodejs-server && npm run copy-package"
   },
   "devDependencies": {
     "copyfiles": "^2.4.1",
