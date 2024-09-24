@@ -1,0 +1,40 @@
+scalar Date
+enum ReservationStatus {
+  All
+  Created
+  Completed
+  Canceled
+}
+input ReservationCreateInput {
+  guestName: String!
+  guestPhone: String!
+  arrivalTime: Date!
+  tableSize: Int!
+}
+input ReservationUpdateInput {
+  id: String!
+  guestName: String!
+  guestPhone: String!
+  arrivalTime: Date!
+  tableSize: Int!
+  status: ReservationStatus!
+}
+type Reservation {
+  id: String!
+  guestName: String!
+  guestPhone: String!
+  arrivalTime: Date!
+  tableSize: Int!
+  status: ReservationStatus!
+}
+type Query {
+  reservations(
+    begin: Date
+    end: Date
+    status: ReservationStatus
+  ): [Reservation]!
+}
+type Mutation {
+  addReservation(input: ReservationCreateInput!): Reservation
+  updateReservation(input: ReservationUpdateInput): Reservation
+}
