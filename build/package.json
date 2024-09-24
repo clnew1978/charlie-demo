@@ -9,10 +9,12 @@
     "copy-nodejs-server": "cd ..  && copyfiles -u 3 nodejs-server/node_modules/leveldown/prebuilds/**/* build/dist/ && copyfiles --flat nodejs-server/config.json build/dist",
     "copy-react-client": "cd .. && copyfiles -u 2 react-client/build/**/* build/dist/client/",
     "copy-package": "copyfiles -u 1 src/package.json dist/",
-    "build-react-nodejs": "npm run clean && npm run build-react-client && npm run build-nodejs-server && npm run copy-react-client && npm run copy-nodejs-server && npm run copy-package"
+    "build-react-nodejs": "npm run clean && npm run build-react-client && npm run build-nodejs-server && npm run copy-react-client && npm run copy-nodejs-server && npm run copy-package",
+    "build-django-client": "cross-env PUBLIC_URL=/app npm run build-react-client"
   },
   "devDependencies": {
     "copyfiles": "^2.4.1",
+    "cross-env": "^7.0.3",
     "rimraf": "^5.0.10",
     "webpack": "^5.94.0",
     "webpack-cli": "^5.1.4"
