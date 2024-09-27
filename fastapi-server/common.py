@@ -76,20 +76,20 @@ class ReservationUpdateInput:
     status: ReservationStatus
 
     def toUpdateFilters(self):
-        query_filter = {"_id", self.id}
+        query_filter = {"_id": self.id}
         update_operation = {
             "$set": {
                 "guestName": self.guestName,
                 "guestPhone": self.guestPhone,
                 "arrivalTime": self.arrivalTime,
                 "tableSize": self.tableSize,
-                "status": self.status,
+                "status": self.status.value,
             }
         }
         return query_filter, update_operation
 
     def toReservation(self):
-        retval = Reservation(
+        return Reservation(
             id=self.id,
             guestName=self.guestName,
             guestPhone=self.guestPhone,
