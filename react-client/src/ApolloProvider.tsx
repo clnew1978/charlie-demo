@@ -12,13 +12,15 @@ const ApolloAppProvider = ({ children }: { children: ReactNode }) => {
     headers: { Authorization: authenticationContext.token },
   }));
   useEffect(() => {
-    setClient(
-      new ApolloClient({
-        uri: process.env.REACT_APP_GRAPHQL_API_ENDPOINT,
-        cache: new InMemoryCache(),
-        headers: { Authorization: authenticationContext.token },
-      })
-    );
+    const _client = new ApolloClient({
+      uri: process.env.REACT_APP_GRAPHQL_API_ENDPOINT,
+      cache: new InMemoryCache(),
+      headers: { Authorization: authenticationContext.token },
+    });
+    setClient(_client);
+    return () => {
+      _client.stop();
+    }
   }, [authenticationContext]);
   return (<div key={authenticationContext.token}><ApolloProvider client={client}>{children}</ApolloProvider></div>);
 };

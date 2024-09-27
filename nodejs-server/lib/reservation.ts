@@ -41,7 +41,7 @@ const typeDefs = buildSchema(`
     }
     type Mutation {
         addReservation(input: ReservationCreateInput!): Reservation
-        updateReservation(input: ReservationUpdateInput): Reservation
+        updateReservation(input: ReservationUpdateInput!): Reservation
     }
 `);
 const resolvers = {
