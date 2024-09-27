@@ -22,7 +22,7 @@ app = FastAPI(lifespan=appLifespan)
 
 @app.get("/")
 async def index():
-    return FileResponse(media_type="text/html", path=Path(__file__).parent.joinpath("client\index.html"))
+    return FileResponse(media_type="text/html", path=Path(__file__).parent.joinpath("client", "index.html"))
 
 
 app.include_router(reservationApp, prefix=Config.baseV0URL + "/graphql")

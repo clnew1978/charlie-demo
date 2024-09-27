@@ -1,0 +1,11 @@
+FROM pythonenv:latest
+
+RUN mkdir -p /opt/charlie-demo/
+
+COPY /dist/ /opt/charlie-demo/
+
+EXPOSE 27322
+
+WORKDIR /opt/charlie-demo
+
+CMD [ "gunicorn", "--bind=:27322", "-k", "uvicorn.workers.UvicornWorker", "main:app"]

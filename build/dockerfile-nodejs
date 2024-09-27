@@ -7,5 +7,4 @@ COPY /dist/ /opt/charlie-demo/
 EXPOSE 27321
 
 WORKDIR /opt/charlie-demo
-
 CMD [ "npm", "start" ]
