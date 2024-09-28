@@ -6,8 +6,6 @@ from enum import Enum
 
 class Config:
     baseV0URL = os.environ.get("baseV0URL", "/api/v0")
-    serverPort = int(os.environ.get("serverPort", 27321))
-    serverAddress = os.environ.get("serverAddress", "0.0.0.0")
     mongoDBAddress = os.environ.get("mongoDBAddress", "mongodb://127.0.0.1:27017")
     dbName = os.environ.get("dbName", "charlie-demo")
     collectionName = os.environ.get("collectionName", "test-0000")
