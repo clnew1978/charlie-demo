@@ -11,6 +11,7 @@ const ApolloAppProvider = ({ children }: { children: ReactNode }) => {
     cache: new InMemoryCache(),
     headers: { Authorization: authenticationContext.token },
   }));
+  client.stop();
   useEffect(() => {
     const _client = new ApolloClient({
       uri: process.env.REACT_APP_GRAPHQL_API_ENDPOINT,
