@@ -1,0 +1,33 @@
+schema:
+  - ./*.graphqls
+exec:
+  filename: ./generated.go
+  package: reservation
+model:
+  filename: ./resemodel/models_gen.go
+  package: resemodel
+
+resolver:
+  layout: follow-schema
+  dir: ./
+  package: reservation
+  filename_template: "{name}.resolvers.go"
+
+call_argument_directives_with_null: true
+
+autobind:
+models:
+  ID:
+    model:
+      - github.com/99designs/gqlgen/graphql.ID
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+  Int:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+  Date:
+    model: go-server/common.Date
+

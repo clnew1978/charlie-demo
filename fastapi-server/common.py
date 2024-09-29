@@ -20,7 +20,6 @@ Date = strawberry.scalar(
 
 @strawberry.enum
 class ReservationStatus(Enum):
-    All = "All"
     Created = "Created"
     Completed = "Completed"
     Canceled = "Canceled"

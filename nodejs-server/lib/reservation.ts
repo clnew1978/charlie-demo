@@ -9,7 +9,6 @@ import { addReservation, listReservations, updateReservation } from './dal';
 const typeDefs = buildSchema(`
     scalar Date
     enum ReservationStatus {
-        All
         Created
         Completed
         Canceled
