@@ -30,15 +30,6 @@ func DALInitialize() error {
 	}
 	client = _client
 	collection = client.Database(common.Config.DBName).Collection(common.Config.CollectionName)
-	objectID1, _ := primitive.ObjectIDFromHex("66f9fd4dd04f9a87ec1eb494")
-	objectID2, _ := primitive.ObjectIDFromHex("66f9fd7bd04f9a87ec1eb495")
-	objectID3, _ := primitive.ObjectIDFromHex("66f9fe55009a1aaac8c4b7cc")
-	filter := bson.M{"_id": bson.M{"$in": bson.A{objectID1, objectID2, objectID3}}}
-	if results, err := collection.DeleteMany(context.Background(), filter); err != nil {
-		log.Printf("Error: call collection.DeleteMany failed with error(%+v)\n", err)
-	} else {
-		log.Printf("Info: call collection.DeleteMany with result(%+v)\n", results.DeletedCount)
-	}
 	return nil
 }
 
