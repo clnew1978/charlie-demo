@@ -11,8 +11,11 @@
     "copy-package": "copyfiles -u 1 src/package.json dist/",
     "build-react-nodejs": "npm run clean && npm run build-react-client && npm run build-nodejs-server && npm run copy-react-client && npm run copy-nodejs-server && npm run copy-package",
     "build-fastapi-server": "cd .. && rimraf fastapi-server/dist/ && copyfiles -u 1 fastapi-server/**/*.py fastapi-server/dist/",
-    "copy-fastapi-server": "cd .. &&  copyfiles -u 2 fastapi-server/dist/**/*.py build/dist/",
-    "build-react-fastapi": "npm run clean && npm run build-react-client && npm run build-fastapi-server && npm run copy-fastapi-server && npm run copy-react-client"
+    "copy-fastapi-server": "cd .. &&  copyfiles -u 2 fastapi-server/dist/**/*.* build/dist/",
+    "build-go-server": "cd .. && rimraf go-server/dist/ && copyfiles -u 1 go-server/**/*.go go-server/dist/ && copyfiles -u 1 go-server/**/*.graphqls go-server/dist/ && copyfiles -u 1 go-server/go.mod go-server/dist/ && copyfiles -u 1 go-server/go.sum go-server/dist/",
+    "copy-go-server": "cd .. &&  copyfiles -u 2 go-server/dist/**/*.* build/dist/",
+    "build-react-fastapi": "npm run clean && npm run build-react-client && npm run build-fastapi-server && npm run copy-fastapi-server && npm run copy-react-client",
+    "build-react-go": "npm run clean && npm run build-react-client && npm run build-go-server && npm run copy-go-server && npm run copy-react-client"
   },
   "devDependencies": {
     "copyfiles": "^2.4.1",
