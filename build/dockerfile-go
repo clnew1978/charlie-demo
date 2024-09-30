@@ -1,0 +1,11 @@
+FROM goenv:latest
+
+RUN mkdir -p /opt/charlie-demo/
+
+COPY /dist/ /opt/charlie-demo/
+
+EXPOSE 27323
+
+WORKDIR /opt/charlie-demo
+
+CMD [ "go", "run", "server.go" ]

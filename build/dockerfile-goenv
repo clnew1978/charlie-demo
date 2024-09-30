@@ -1,0 +1,13 @@
+FROM golang:1.23-alpine3.20
+
+ENV GOPROXY=https://goproxy.cn,direct
+
+RUN mkdir -p /opt/charlie-demo/
+
+COPY /go.mod /opt/charlie-demo/
+COPY /go.sum /opt/charlie-demo/
+
+WORKDIR /opt/charlie-demo
+RUN go mod download
+
+RUN rm -r /opt/charlie-demo
