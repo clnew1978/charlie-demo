@@ -8,6 +8,7 @@ import (
 	"log"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -29,6 +30,15 @@ func DALInitialize() error {
 	}
 	client = _client
 	collection = client.Database(common.Config.DBName).Collection(common.Config.CollectionName)
+	objectID1, _ := primitive.ObjectIDFromHex("66f9fd4dd04f9a87ec1eb494")
+	objectID2, _ := primitive.ObjectIDFromHex("66f9fd7bd04f9a87ec1eb495")
+	objectID3, _ := primitive.ObjectIDFromHex("66f9fe55009a1aaac8c4b7cc")
+	filter := bson.M{"_id": bson.M{"$in": bson.A{objectID1, objectID2, objectID3}}}
+	if results, err := collection.DeleteMany(context.Background(), filter); err != nil {
+		log.Printf("Error: call collection.DeleteMany failed with error(%+v)\n", err)
+	} else {
+		log.Printf("Info: call collection.DeleteMany with result(%+v)\n", results.DeletedCount)
+	}
 	return nil
 }
 
@@ -43,19 +53,19 @@ func DALDestroy() {
 	client = nil
 }
 
-func ListReservations(filter interface{}) ([]*resemodel.Reservation, error) {
+func listReservations(ctx context.Context, filter interface{}) ([]*resemodel.Reservation, error) {
 	if collection == nil {
 		log.Println("Error: database not initailized correctly")
 		return nil, fmt.Errorf("database not initailized correctly")
 	}
-	cur, err := collection.Find(context.Background(), filter)
+	cur, err := collection.Find(ctx, filter)
 	if err != nil {
 		log.Printf("Error: call collection.Find failed with error(%+v)", err)
 		return nil, fmt.Errorf("call collection.Find failed with error(%+v)", err)
 	}
-	defer cur.Close(context.Background())
+	defer cur.Close(ctx)
 	retval := []*resemodel.Reservation{}
-	for cur.Next(context.Background()) {
+	for cur.Next(ctx) {
 		result := struct {
 			ID          primitive.ObjectID `bson:"_id"`
 			GuestName   string
@@ -77,4 +87,89 @@ func ListReservations(filter interface{}) ([]*resemodel.Reservation, error) {
 		})
 	}
 	return retval, nil
+}
+
+func addReservations(
+	ctx context.Context,
+	guestName string,
+	guestPhone string,
+	arrivalTime common.Date,
+	tableSize int,
+) (*resemodel.Reservation, error) {
+	if collection == nil {
+		log.Println("Error: database not initailized correctly")
+		return nil, fmt.Errorf("database not initailized correctly")
+	}
+	var doc struct {
+		GuestName   string `bson:"guestName"`
+		GuestPhone  string `bson:"guestPhone"`
+		ArrivalTime int    `bson:"arrivalTime"`
+		TableSize   int    `bson:"tableSize"`
+		Status      string `bson:"status"`
+	}
+	doc.GuestName = guestName
+	doc.GuestPhone = guestPhone
+	doc.ArrivalTime = int(arrivalTime)
+	doc.TableSize = tableSize
+	doc.Status = resemodel.ReservationStatusCreated.String()
+	if result, err := collection.InsertOne(ctx, doc); err != nil {
+		log.Printf("Error: call collection.InsertOne failed with error(%+v)\n", err)
+		return nil, err
+	} else {
+		if id, ok := result.InsertedID.(primitive.ObjectID); !ok {
+			log.Printf("Error: wrong type for InsertedID.\n")
+			return nil, fmt.Errorf("insert failed")
+		} else {
+			retval := &resemodel.Reservation{
+				ID:          id.Hex(),
+				GuestName:   guestName,
+				GuestPhone:  guestPhone,
+				ArrivalTime: arrivalTime,
+				TableSize:   tableSize,
+				Status:      resemodel.ReservationStatusCreated,
+			}
+			return retval, nil
+		}
+	}
+}
+
+func updateReservations(
+	ctx context.Context,
+	id string,
+	guestName string,
+	guestPhone string,
+	arrivalTime common.Date,
+	tableSize int,
+	status resemodel.ReservationStatus,
+) (*resemodel.Reservation, error) {
+	if collection == nil {
+		log.Println("Error: database not initailized correctly")
+		return nil, fmt.Errorf("database not initailized correctly")
+	}
+	objectID, fromError := primitive.ObjectIDFromHex(id)
+	if fromError != nil {
+		log.Println("Error: wrong format for id")
+		return nil, fromError
+	}
+	filter := bson.M{"_id": objectID}
+	update := bson.M{"$set": bson.M{
+		"guestName":   guestName,
+		"guestPhone":  guestPhone,
+		"arrivalTime": int(arrivalTime),
+		"tableSize":   tableSize,
+		"status":      status.String(),
+	}}
+	if _, err := collection.UpdateOne(ctx, filter, update); err != nil {
+		log.Printf("Error: call collection.UpdateOne error(%+v)\n", err)
+		return nil, err
+	} else {
+		return &resemodel.Reservation{
+			ID:          id,
+			GuestName:   guestName,
+			GuestPhone:  guestName,
+			ArrivalTime: arrivalTime,
+			TableSize:   tableSize,
+			Status:      status,
+		}, nil
+	}
 }

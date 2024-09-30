@@ -43,7 +43,11 @@ class Query:
 @strawberry.type
 class Mutation:
     @strawberry.mutation
-    async def addReservation(self, input: ReservationCreateInput) -> Reservation:
+    async def addReservation(self, info: strawberry.Info, input: ReservationCreateInput) -> Reservation:
+        user: User | None = info.context["user"]
+        if user.userType == UserType.Guest:
+            if user.name != input.guestName:
+                raise StrawberryException("Wrong Name")
         document = input.toInsertDocument()
         document["_id"] = dal.addReservation(document)
         return Reservation.fromDocument(document)
