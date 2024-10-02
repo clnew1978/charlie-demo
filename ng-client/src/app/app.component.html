@@ -1,0 +1,168 @@
+<mat-toolbar color="primary">
+  <span>Charlie Demo</span>
+  <span class="example-spacer"></span>
+  @if ((authenticationChanged$ | async)?.token !== '') {
+  <button mat-button (click)="logout()"> Logout </button>
+  } @else {
+  <button mat-button (click)="login()"> Login </button>
+  }
+</mat-toolbar>
+@if (loading) {
+<mat-progress-bar mode="query"></mat-progress-bar>
+}
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <ng-container matColumnDef="guestName">
+    <th mat-header-cell *matHeaderCellDef> Guest Name </th>
+    <td mat-cell *matCellDef="let element">
+      @if ((editingReservationID == element.id) && ((authenticationChanged$ | async)?.userType === 'Employee')) {
+      <mat-form-field class="example-full-width">
+        <mat-label>Guest Name</mat-label>
+        <input matInput [(ngModel)]="element.guestName">
+      </mat-form-field>
+      } @else {
+      {{element.guestName}}
+      }
+    </td>
+    <td mat-footer-cell *matFooterCellDef>
+      @if (adding) {
+      @if (authenticationChanged$ | async; as info){
+      @if (info.userType === 'Employee') {
+      <mat-form-field class="example-full-width">
+        <mat-label>Guest Name</mat-label>
+        <input matInput [(ngModel)]="addingGuestName">
+      </mat-form-field>
+      } @else {
+      {{info.name}}
+      }
+      }
+      }
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="guestPhone">
+    <th mat-header-cell *matHeaderCellDef> Phone Number </th>
+    <td mat-cell *matCellDef="let element">
+      @if (editingReservationID == element.id) {
+      <mat-form-field class="example-full-width">
+        <mat-label>Guest Phone</mat-label>
+        <input matInput [(ngModel)]="element.guestPhone">
+      </mat-form-field>
+      } @else {
+      {{element.guestPhone}}
+      }
+    </td>
+    <td mat-footer-cell *matFooterCellDef>
+      @if (adding) {
+      <mat-form-field class="example-full-width">
+        <mat-label>Guest Phone</mat-label>
+        <input matInput [(ngModel)]="addingGuestPhone">
+      </mat-form-field>
+      }
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="arrivalTime">
+    <th mat-header-cell *matHeaderCellDef> Arrival Time </th>
+    <td mat-cell *matCellDef="let element">
+      @if (editingReservationID == element.id) {
+      <input [owlDateTime]="dt4" [owlDateTimeTrigger]="dt4" placeholder="Date Time" [(ngModel)]="element.arrivalTime">
+      <owl-date-time #dt4></owl-date-time>
+      } @else {
+      {{element.arrivalTime.toLocaleString()}}
+      }
+    </td>
+    <td mat-footer-cell *matFooterCellDef>
+      @if (adding) {
+      <input [owlDateTime]="dt3" [owlDateTimeTrigger]="dt3" placeholder="Date Time" [(ngModel)]="addingArrivalTime">
+      <owl-date-time #dt3></owl-date-time>
+      }
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="tableSize">
+    <th mat-header-cell *matHeaderCellDef> Table Size </th>
+    <td mat-cell *matCellDef="let element">
+      @if (editingReservationID == element.id) {
+      <mat-label>Table Size</mat-label>
+      <input matInput type="number" max="20" min="1" [(ngModel)]="element.tableSize">
+      } @else {
+      {{element.tableSize}}
+      }
+    </td>
+    <td mat-footer-cell *matFooterCellDef>
+      @if (adding) {
+      <mat-form-field class="example-full-width">
+        <mat-label>Table Size</mat-label>
+        <input matInput type="number" max="20" min="1" [(ngModel)]="addingTableSize">
+      </mat-form-field>
+      }
+      </td>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef> Status </th>
+    <td mat-cell *matCellDef="let element">
+      @if ((editingReservationID == element.id) && ((authenticationChanged$ | async)?.userType === 'Employee')) {
+      <mat-select [(ngModel)]="element.status">
+        <mat-option value="Created">Created</mat-option>
+        <mat-option value="Completed">Completed</mat-option>
+      </mat-select>
+      } @else {
+      {{element.status}}
+      }
+    </td>
+    <td mat-footer-cell *matFooterCellDef></td>
+  </ng-container>
+
+  <ng-container matColumnDef="edit">
+    <th mat-header-cell *matHeaderCellDef>  </th>
+    <td mat-cell *matCellDef="let element">
+      @if (editingReservationID === element.id) {
+      <button mat-flat-button color="primary" (click)="ok(element)" style="margin-right: 16px;"> OK </button>
+      <button mat-flat-button color="primary" (click)="cancel(element)" style="margin-right: 32px;"> Cancel </button>
+      <button mat-flat-button color="primary" (click)="delete(element)"> Delete </button>
+      } @else if ((element.status !== 'Completed') || ((authenticationChanged$ | async)?.userType !== 'Guest')) {
+      <button mat-flat-button color="primary" (click)="edit(element)"> Edit </button>
+      }
+    </td>
+    <td mat-footer-cell *matFooterCellDef>
+      @if ((authenticationChanged$ | async)?.token !== '') {
+      @if (adding) {
+      <button mat-flat-button color="primary" (click)="addOK()" style="margin-right: 16px;"> OK </button>
+      <button mat-flat-button color="primary" (click)="addCancel()"> Cancel </button>
+      } @else {
+      <button mat-flat-button color="primary" (click)="add()"> Add </button>
+      }
+      }
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+</table>
+@if ((authenticationChanged$ | async)?.userType === 'Employee') {
+<mat-grid-list cols="3" rowHeight="5:1">
+  <mat-grid-tile>
+    <mat-select [(ngModel)]="statusFilter" (selectionChange)="updateDateSource()">
+      <mat-option value="All">All</mat-option>
+      <mat-option value="Created">Created</mat-option>
+      <mat-option value="Completed">Completed</mat-option>
+    </mat-select>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <mat-slide-toggle [(ngModel)]="enableBegin" (change)="updateDateSource()">Bedin</mat-slide-toggle>
+    @if (enableBegin) {
+    <input [owlDateTime]="dt1" [owlDateTimeTrigger]="dt1" placeholder="Date Time" [(ngModel)]="beginTime" (dateTimeChange)="updateDateSource()">
+    <owl-date-time #dt1></owl-date-time>
+    }
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <mat-slide-toggle [(ngModel)]="enableEnd" (change)="updateDateSource()">End</mat-slide-toggle>
+    @if (enableEnd) {
+    <input [owlDateTime]="dt2" [owlDateTimeTrigger]="dt2" placeholder="Date Time" [(ngModel)]="endTime" (dateTimeChange)="updateDateSource()">
+    <owl-date-time #dt2></owl-date-time>
+    }
+  </mat-grid-tile>
+</mat-grid-list>
+}

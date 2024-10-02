@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>Login</h2>
+@if (loading) {
+  <mat-progress-bar mode="query"></mat-progress-bar>
+}
+<mat-dialog-content class="mat-typography login-form">
+  <p><small>
+    Five inbuilt users<br>
+    Same password(12345)<br>
+    Just Select one
+  </small></p>
+  <mat-form-field class="login-full-width">
+    <mat-label>User Name</mat-label>
+    <input type="text" matInput [formControl]="userNameControl" [matAutocomplete]="auto">
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelect($event.option.value)" [displayWith]="displayName">
+      @for (user of filteredUsers$ | async; track user) {
+        <mat-option [value]="user">{{user.name}}</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+  <mat-form-field class="login-full-width">
+    <mat-label>Password</mat-label>
+    <input #inputPassword type="password" matInput>
+  </mat-form-field>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button [mat-dialog-close]="getData()" cdkFocusInitial>OK</button>
+  <button mat-button mat-dialog-close>Cancel</button>
+</mat-dialog-actions>
