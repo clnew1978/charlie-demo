@@ -2,7 +2,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: '../server/dist/app.js',
+  entry: '../nodejs-server/dist/app.js',
   mode: 'none',
   target: 'node',
   output: {
