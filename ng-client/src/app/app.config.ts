@@ -32,7 +32,7 @@ export const appConfig: ApplicationConfig = {
 
       return {
         default: {
-          link: ApolloLink.from([basic, auth, httpLink.create({ uri: 'http://127.0.0.1:27321/api/v0/graphql' })]),
+          link: ApolloLink.from([basic, auth, httpLink.create({ uri: '/api/v0/graphql' })]),
           cache: new InMemoryCache(),
           defaultOptions: {
             watchQuery: { fetchPolicy: 'no-cache', errorPolicy: 'ignore' },
@@ -41,7 +41,7 @@ export const appConfig: ApplicationConfig = {
           },
         },
         ssoGraphQL: {
-          link: httpLink.create({ uri: 'http://127.0.0.1:27321/api/v0/sso/graphql' }),
+          link: httpLink.create({ uri: '/api/v0/sso/graphql' }),
           cache: new InMemoryCache(),
           defaultOptions: {
             watchQuery: { fetchPolicy: 'no-cache', errorPolicy: 'ignore' },
