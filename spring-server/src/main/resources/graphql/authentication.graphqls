@@ -1,0 +1,16 @@
+enum UserType {
+  Guest
+  Employee
+}
+type User {
+  id: String!
+  name: String!
+  phone: String
+  userType: UserType!
+  password: String!
+}
+type AuthenticationInfo {
+  token: String!
+  name: String!
+  userType: String!
+}

@@ -2,7 +2,7 @@ import strawberry
 import typing
 import dal
 from fastapi import Depends, Request
-from strawberry.fastapi import GraphQLRouter, BaseContext
+from strawberry.fastapi import GraphQLRouter
 from common import Date, ReservationStatus, Reservation, ReservationCreateInput, ReservationUpdateInput, User, users, UserType
 from strawberry.exceptions import StrawberryException
 

@@ -1,0 +1,9 @@
+{
+    "properties": [
+        {
+            "name": "main.mongodb.collection-name",
+            "type": "java.lang.String",
+            "description": "collection name for mongodb"
+        }
+    ]
+}

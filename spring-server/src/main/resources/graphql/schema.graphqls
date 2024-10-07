@@ -1,0 +1,13 @@
+type Query {
+  users: [User]!
+  reservations(
+    begin: Date
+    end: Date
+    status: ReservationStatus
+  ): [Reservation]!
+}
+type Mutation {
+  login(name: String!, password: String!): AuthenticationInfo!
+  addReservation(input: ReservationCreateInput!): Reservation
+  updateReservation(input: ReservationUpdateInput!): Reservation
+}
