@@ -29,5 +29,8 @@
     "rimraf": "^5.0.10",
     "webpack": "^5.94.0",
     "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "build": "file:"
   }
 }

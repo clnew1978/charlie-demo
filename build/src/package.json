@@ -4,5 +4,8 @@
     "description": "Charlie Demo",
     "scripts": {
         "start": "node server.bundle.js"
+    },
+    "dependencies": {
+        "charlie-demo": "file:"
     }
 }
