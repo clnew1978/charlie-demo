@@ -7,9 +7,11 @@
     "build-nodejs-server": "cd ../nodejs-server && npm run build && cd ../build && webpack",
     "build-react-client": "cd ../react-client && npm run build",
     "build-ng-client": "cd ../ng-client && npm run build",
-    "copy-nodejs-server": "cd ..  && copyfiles -u 3 nodejs-server/node_modules/leveldown/prebuilds/**/* build/dist/ && copyfiles --flat nodejs-server/config.json build/dist",
+    "build-vue-client": "cd ../vue-client && npm run build",
     "copy-react-client": "cd .. && copyfiles -u 2 react-client/build/**/* build/dist/client/",
     "copy-ng-client": "cd .. && copyfiles -u 4 ng-client/dist/ng-client/browser/**/* build/dist/client/",
+    "copy-vue-client": "cd .. && copyfiles -u 2 vue-client/dist/**/* build/dist/client/",
+    "copy-nodejs-server": "cd ..  && copyfiles -u 3 nodejs-server/node_modules/leveldown/prebuilds/**/* build/dist/ && copyfiles --flat nodejs-server/config.json build/dist",
     "copy-package": "copyfiles -u 1 src/package.json dist/",
     "build-react-nodejs": "npm run clean && npm run build-react-client && npm run build-nodejs-server && npm run copy-react-client && npm run copy-nodejs-server && npm run copy-package",
     "build-ng-nodejs": "npm run clean && npm run build-ng-client && npm run build-nodejs-server && npm run copy-ng-client && npm run copy-nodejs-server && npm run copy-package",
@@ -21,7 +23,8 @@
     "build-react-go": "npm run clean && npm run build-react-client && npm run build-go-server && npm run copy-go-server && npm run copy-react-client",
     "build-spring-boot-server": "cd ../spring-server && mvn -U clean install",
     "copy-spring-boot-server": "cd .. && copyfiles -u 2 spring-server/target/**/* build/dist/",
-    "build-spring-boot": "npm run clean && npm run build-spring-boot-server && npm run copy-spring-boot-server"
+    "build-spring-boot": "npm run clean && npm run build-spring-boot-server && npm run copy-spring-boot-server",
+    "build-vue-nodejs": "npm run clean && npm run build-vue-client && npm run build-nodejs-server && npm run copy-vue-client && npm run copy-nodejs-server && npm run copy-package"
   },
   "devDependencies": {
     "copyfiles": "^2.4.1",
