@@ -21,7 +21,7 @@ app.use(createPinia());
 
 app.use(createVuetify({ components, directives, icons: { defaultSet: 'mdi', aliases, sets: { mdi } } }));
 
-const basic = setContext(() => ({ headers: { Accept: 'charset=utf-8' } }));
+const basic = setContext(() => ({ headers: { Accept: '*/*' } }));
 const auth = setContext(() => {
     const info = useAuthenticationStore();
     if (info.isLogin) {
