@@ -1,5 +1,9 @@
 # charlie-demo
 
-# charlie demo for interview-quiz.docx
+## charlie demo for interview-quiz.docx
 
-
+nestjs
+elasticsearch
+grpc
+ai
+Grafana
