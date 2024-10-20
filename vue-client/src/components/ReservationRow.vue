@@ -70,9 +70,9 @@ export default {
             const variables = {
                 id: this.id,
                 guestName: this.guestNameRef,
-                guestPhone: this.guestPhone,
-                arrivalTime: this.arrivalTime?.getTime(),
-                tableSize: this.tableSize,
+                guestPhone: this.guestPhoneRef,
+                arrivalTime: this.arrivalTimeRef.getTime(),
+                tableSize: this.tableSizeRef,
                 status: this.statusRef,
             }
             this.$apollo.mutate({
