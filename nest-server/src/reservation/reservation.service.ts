@@ -30,7 +30,6 @@ export class ReservationService {
   }
 
   async addReservation(input: ReservationCreateInput): Promise<Reservation> {
-    console.log(input);
     const createdReservation = new this.reservationModel({
       status: 'Created',
       ...input,
