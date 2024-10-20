@@ -35,7 +35,7 @@ export default {
                 guestName: this.guestNameRef,
                 guestPhone: this.guestPhoneRef,
                 arrivalTime: this.arrivalTimeRef.getTime(),
-                tableSize: this.tableSizeRef,
+                tableSize: Number(this.tableSizeRef),
             };
             this.$apollo.mutate({
                 mutation: gql`
