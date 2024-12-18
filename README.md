@@ -7,3 +7,4 @@ elasticsearch
 grpc
 ai
 Grafana
+tailwindcss
