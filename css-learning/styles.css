@@ -1,3 +1,5 @@
+/* 2025-01-15
+
 h1 {
     color: red;
 }
@@ -39,4 +41,25 @@ body h1+p .special {
 
 body h1+p::first-line {
     color: bisque;
+}
+*/
+p,
+ul {
+    border: 2px solid rebeccapurple;
+    padding: 0.5em;
+}
+
+.block,
+li {
+    border: 2px solid blue;
+    padding: 0.5em;
+}
+
+ul {
+    display: flex;
+    list-style: none;
+}
+
+.block {
+    display: block;
 }
